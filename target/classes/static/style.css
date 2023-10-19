@@ -1,0 +1,92 @@
+h1 { color: blue; }
+
+.primary_text {
+
+}
+
+.secondary_text {
+    margin-left: 10px;
+}
+
+hr.light {
+    border-top: 1px solid #ddd;
+}
+
+hr.thick {
+    border-top: 5px solid #aaa;
+    border-radius: 5px;
+}
+
+.margin_small{
+    margin:2%;
+}
+
+.margin_big{
+    margin:5%;
+}
+
+.clickable {
+    transition: 0.2s;
+}
+
+.clickable:hover {
+    color: #002;
+    background-color: #eee;
+    cursor: pointer;
+}
+
+@keyframes anim_popup {
+    0% { right: -100% }
+    100% { right: 15px }
+}
+
+.form-popup {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px #00000080;
+
+    animation: 0.2s anim_popup;
+}
+
+.form-container {
+    max-width: 300px;
+    padding: 10px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+}
+
+.form-container .btn {
+    background-color: lightslategray;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom:10px;
+    opacity: 0.8;
+}
+
+.form-container .cancel {
+    background-color: lightcoral;
+}
+  
+.form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+}
+
+
+.form-container input[type=text], .form-container input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    border: none;
+    background: white;
+  }
+  
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+}
