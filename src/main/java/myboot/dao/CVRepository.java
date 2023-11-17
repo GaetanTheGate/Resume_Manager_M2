@@ -18,7 +18,7 @@ import myboot.model.Person;
 @Transactional
 public interface CVRepository extends CrudRepository<CV, Integer>{
 
-    @Query("SELECT c FROM CV c WHERE c.title LIKE CONCAT('%', CONCAT(:title, '%')) AND c.description LIKE CONCAT('%', CONCAT(:description, '%'))")
+    @Query("SELECT c FROM CV c WHERE UPPER(c.title) LIKE CONCAT('%', CONCAT(UPPER(:title), '%')) AND UPPER(c.description) LIKE CONCAT('%', CONCAT(UPPER(:description), '%'))")
     List<CV> findByTitleAndDescription(String title, String description);
 
     @Query("SELECT c.owner FROM CV c WHERE c.id = :id")

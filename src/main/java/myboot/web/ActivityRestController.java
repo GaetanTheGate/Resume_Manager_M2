@@ -35,8 +35,8 @@ public class ActivityRestController {
     /// GetMapping
 
     @GetMapping("")
-    public Iterable<ActivityDTO> getActivitys(@RequestParam(defaultValue = "", required = false) String title, @RequestParam(defaultValue = "", required = false) String description){
-        return a_repo.findByTitleAndDescription(title, description).stream().map( a -> mapper.map(a, ActivityDTO.class)).toList();
+    public Iterable<ActivityDTO> getActivitys(@RequestParam(defaultValue = "", required = false) String title, @RequestParam(defaultValue = "", required = false) Integer year){
+        return a_repo.findByTitleAndYearMin(title, year).stream().map( a -> mapper.map(a, ActivityDTO.class)).toList();
     }
 
     @GetMapping("/{id}")

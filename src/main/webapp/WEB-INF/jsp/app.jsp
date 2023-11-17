@@ -3,13 +3,14 @@
 <c:url var="app" value="/app.js" />
 
 <div id="myApp">
+    <!-- Nav bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="${home}">LOGO</a>  
         <a class="navbar-brand dropdown-toggle" id="navbarDropdownMenuLink" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rechercher</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#">Personnes</a>
-            <a class="dropdown-item" href="#">CVs</a>
-            <a class="dropdown-item" href="#">Activités</a>
+            <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('person')">Personnes</a>
+            <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('cv')">CVs</a>
+            <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('activity')">Activitees</a>
         </div>        
         <a class="navbar-brand" href="#" v-on:click="openLogin()">Se connecter</a>
         <a class="navbar-brand d-inline-block align-top" href="${home}">Se deconnecter</a>
@@ -21,10 +22,10 @@
           <h1>Se connecter</h1>
       
           <label for="email"><b>Identifiant</b></label>
-          <input type="text" placeholder="identifiant" name="email" required>
+          <input type="text" placeholder="identifiant" name="email" class="form-control" required>
       
           <label for="psw"><b>Mot de passe</b></label>
-          <input type="password" placeholder="mot de passe" name="psw" required>
+          <input type="password" placeholder="mot de passe" name="psw" class="form-control" required>
       
           <button class="btn">Login</button>
           <button class="btn cancel" v-on:click="closeLogin()">Close</button>
@@ -33,6 +34,59 @@
 
     <div class="container margin_small">
 
+        <!-- Display search bar -->
+        <div v-if="search != null">
+            <div v-if="search == 'person'">
+                <h1>Rechercher des personnes :</h1>
+                <div class="form-group">
+                    <label>Prenom :</label>
+                    <input v-model.trim="elem1" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label>Nom :</label>
+                    <input v-model.trim="elem2" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <button v-on:click="searchPerson(elem1, elem2)" class="btn btn-primary">Rechercher</button>
+                    <button v-on:click="closeSearchBar()" class="btn btn-secondary">Fermer recherche</button>
+                </div>
+            </div>
+
+            <div v-if="search == 'cv'">
+                <h1>Rechercher des CVs :</h1>
+                <div class="form-group">
+                    <label>Titre du CV :</label>
+                    <input v-model.trim="elem1" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label>Description du CV :</label>
+                    <input v-model.trim="elem2" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <button v-on:click="searchCV(elem1, elem2)" class="btn btn-primary">Rechercher</button>
+                    <button v-on:click="closeSearchBar()" class="btn btn-secondary">Fermer recherche</button>
+                </div>
+            </div>
+            
+            <div v-if="search == 'activity'">
+                <h1>Rechercher des activitees :</h1>
+                <div class="form-group">
+                    <label>Titre de l'activitee :</label>
+                    <input v-model.trim="elem1" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label>Annee minimum de l'activitee :</label>
+                    <input v-model.trim="elem2" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <button v-on:click="searchActivity(elem1, elem2)" class="btn btn-primary">Rechercher</button>
+                    <button v-on:click="closeSearchBar()" class="btn btn-secondary">Fermer recherche</button>
+                </div>
+            </div>
+            <hr class="margin_small thick"/>
+        </div>
+
+        <!-- Display information about something -->
         <div>
             <!-- If there is no actity -->
             <div v-if="!activity">
@@ -73,6 +127,7 @@
             </div>
         </div>
         
+        <!-- Display the list and its informations -->
         <div>
             <!-- If there is Element to list -->
             <div v-if="(list != null)">

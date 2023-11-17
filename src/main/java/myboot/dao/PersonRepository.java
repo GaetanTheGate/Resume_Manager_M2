@@ -15,7 +15,7 @@ import myboot.model.Person;
 @Repository
 @Transactional
 public interface PersonRepository extends CrudRepository<Person, Integer> {
-    @Query("SELECT p FROM Person p WHERE p.name LIKE CONCAT('%', CONCAT(:name, '%')) AND p.firstname LIKE CONCAT('%', CONCAT(:firstname, '%'))")
+    @Query("SELECT p FROM Person p WHERE UPPER(p.name) LIKE CONCAT('%', CONCAT(UPPER(:name), '%')) AND UPPER(p.firstname) LIKE CONCAT('%', CONCAT(UPPER(:firstname), '%'))")
     List<Person> findByNameAndFirstName(String name, String firstname);
 
     @Query("SELECT p.cvs FROM Person p WHERE p.id = :id")

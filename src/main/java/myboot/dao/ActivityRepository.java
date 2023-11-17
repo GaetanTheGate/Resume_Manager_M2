@@ -15,8 +15,12 @@ import org.springframework.stereotype.Repository;
 @Transactional
 public interface ActivityRepository extends CrudRepository<Activity, Integer>  {
 
-    @Query("SELECT a FROM Activity a WHERE a.title LIKE CONCAT('%', CONCAT(:title, '%')) AND a.description LIKE CONCAT('%', CONCAT(:description, '%'))")
+    @Query("SELECT a FROM Activity a WHERE UPPER(a.title) LIKE CONCAT('%', CONCAT(UPPER(:title), '%')) AND UPPER(a.description) LIKE CONCAT('%', CONCAT(UPPER(:description), '%'))")
     List<Activity> findByTitleAndDescription(String title, String description);
+
+
+    @Query("SELECT a FROM Activity a WHERE UPPER(a.title) LIKE CONCAT('%', CONCAT(UPPER(:title), '%')) AND a.year >= :year")
+    List<Activity> findByTitleAndYearMin(String title, Integer year);
 
     @Query("SELECT a.cv FROM Activity a WHERE a.id = :id")
     CV getCV(int id);

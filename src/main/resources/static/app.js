@@ -5,9 +5,12 @@ const myApp = {
         console.log("Data");
         return {
             axios:      null,
+            
             person:     null,
             cv:         null,
             activity:   null,
+
+            search:     null,
 
             list:       null,
             show:       null,
@@ -79,17 +82,17 @@ const myApp = {
         },
 
         resetPerson: function(){
-            this.persons = null;
+            this.person = null;
             this.resetCV();
         },
 
         resetCV: function(){
-            this.cvs = null;
+            this.cv = null;
             this.resetActivity();
         },
 
         resetActivity: function(){
-            this.activities = null;
+            this.activitie = null;
         },
 
         setNothing: function(){
@@ -121,7 +124,7 @@ const myApp = {
             console.log("SetActivity");
             this.axios.get("activities/"+id).then(a => {
                 this.activity = a.data;
-                this.setListAndShow([], this.getActivityShow);
+                this.setListAndShow([], null);
             });
         },
 
@@ -133,6 +136,35 @@ const myApp = {
             this.login = false;
         },
 
+        openSearchBarFor: function(name) {
+            this.search = name;
+
+            this.elem1=  '';
+            this.elem2=  '';
+        },
+
+        closeSearchBar: function() {
+            this.search = null
+        },
+
+        searchPerson: function(firstname, name) {
+            this.axios.get("persons?firstname="+firstname+"&name="+name).then(l => {
+                this.setListAndShow(l.data, this.getPersonShow());
+            });
+        },
+
+        searchCV: function(title, description) {
+            this.axios.get("cvs?title="+title+"&description="+description).then(l => {
+                this.setListAndShow(l.data, this.getCVShow());
+            });
+        },
+
+        searchActivity: function(title, year) {
+            if(year == '') year = 0;
+            this.axios.get("activities?title="+title+"&year="+year).then(l => {
+                this.setListAndShow(l.data, this.getActivityShow());
+            });
+        },
     }
 }
 
