@@ -26,7 +26,6 @@ import myboot.model.XUser;
  */
 @Configuration
 @EnableWebSecurity
-@Profile("usejwt")
 public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -40,8 +39,8 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@PostConstruct
 	public void init() {
 		var encoder = passwordEncoder();
-		var aa = new XUser("aaa", encoder.encode("aaa"), Set.of("ADMIN", "USER"));
-		var bb = new XUser("bbb", encoder.encode("bbb"), Set.of("USER"));
+		var aa = new XUser("aaa", encoder.encode("aaa"), Set.of("ADMIN", "USER"), null);
+		var bb = new XUser("bbb", encoder.encode("bbb"), Set.of("USER"), null);
 		userRepo.save(aa);
 		userRepo.save(bb);
 		logger.debug("--- INIT SPRING SECURITY JWT");

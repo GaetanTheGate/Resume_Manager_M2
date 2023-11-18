@@ -24,13 +24,23 @@ import myboot.security.UserService;
  */
 @RestController
 @RequestMapping("/secu-users")
-@Profile("usejwt")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 
 	private ModelMapper modelMapper = new ModelMapper();
+
+
+	@GetMapping("")
+	public String test(){
+		return "tets";
+	}
+
+	@PostMapping("")
+	public String tester(){
+		return "tets";
+	}
 
 	/**
 	 * Authentification et récupération d'un JWT
@@ -39,7 +49,12 @@ public class UserController {
 	public String login(//
 			@RequestParam String username, //
 			@RequestParam String password) {
-		return userService.login(username, password);
+		try {
+					return userService.login(username, password);
+
+		} catch (Exception e) {
+			return "salut : " + e.toString();
+		}
 	}
 
 	/**

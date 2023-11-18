@@ -15,7 +15,6 @@ import myboot.dao.XUserRepository;
  * connecté.
  */
 @Service
-@Profile("usejwt")
 public class JwtUserDetails implements UserDetailsService {
 
 	@Autowired

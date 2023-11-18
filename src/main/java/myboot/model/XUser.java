@@ -7,6 +7,9 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,12 +22,15 @@ import lombok.NoArgsConstructor;
 public class XUser {
 
 	@Id
-	String userName;
+	private String userName;
 
 	@Basic
-	String password;
+	private String password;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-	Set<String> roles;
+	private Set<String> roles;
 
+	@OneToOne(mappedBy = "self", fetch = FetchType.LAZY)
+	@JsonManagedReference
+	private Person self;
 }

@@ -5,6 +5,7 @@ const myApp = {
         console.log("Data");
         return {
             axios:      null,
+            axiosLogin: null,
             
             person:     null,
             cv:         null,
@@ -16,7 +17,8 @@ const myApp = {
             show:       null,
             backList:   null,
 
-            login:      null,
+            show_login: null,
+            show_signup:null,
         }
     },
 
@@ -30,7 +32,14 @@ const myApp = {
             headers: { 'Content-show': 'application/json' },
         });
 
+        this.axiosLogin = axios.create({
+            baseURL: 'http://localhost:8081/secu-users',
+            timeout: 5000,
+            headers: { 'Authorization': 'Bearer ' },
+        });
+
         this.closeLogin();
+        this.closeSignup();
         this.setNothing();
     },
 
@@ -129,11 +138,18 @@ const myApp = {
         },
 
         openLogin: function() {
-            this.login = true;
+            this.show_login = true;
+            this.show_signup = false;
         },
 
-        closeLogin: function() {
-            this.login = false;
+        openSignup: function() {
+            this.show_login = false;
+            this.show_signup = true;
+        },
+
+        closeLog: function() {
+            this.show_login = false;
+            this.show_signup = false;
         },
 
         openSearchBarFor: function(name) {
@@ -165,6 +181,28 @@ const myApp = {
                 this.setListAndShow(l.data, this.getActivityShow());
             });
         },
+
+        login: function(username, password){
+            this.axiosLogin.post("/login?username="+username+"&password="+password, {}).then(s => {
+                console.log(s);
+            });
+        },
+
+        logout: function(){
+            this.axiosLogin.get("/logout");
+        },
+
+        signup: function(username, password, password2){
+            if(password != password2){
+                return;
+            }
+
+            this.axiosLogin.post("/signup", {username:username, password:password, self:null}).then(s =>{
+                console.log(s);
+            });
+
+
+        }
     }
 }
 

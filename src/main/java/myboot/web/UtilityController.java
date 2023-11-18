@@ -1,11 +1,13 @@
 package myboot.web;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import myboot.dao.ActivityRepository;
 import myboot.dao.CVRepository;
 import myboot.dao.PersonRepository;
+import myboot.dao.XUserRepository;
 import myboot.model.Activity;
 import myboot.model.CV;
 import myboot.model.Person;
+import myboot.model.XUser;
 
 @Controller
 public class UtilityController implements ErrorController {
@@ -32,6 +36,9 @@ public class UtilityController implements ErrorController {
     private int nb_c = 4;
     private int nb_p = 3;
 
+
+    @Autowired
+    protected XUserRepository u_repo;
     @Autowired
     protected ActivityRepository a_repo;
     @Autowired
@@ -43,7 +50,14 @@ public class UtilityController implements ErrorController {
 	public void init(){
 
         for(int x = 0 ; x < nb_p ; x++){
-            Person p = p_repo.save(new Person(0, "password"+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null));
+            var encoder = new BCryptPasswordEncoder(12);
+
+            XUser u = u_repo.save(new XUser("p"+x, encoder.encode("psw"+x), Set.of("USER"), null));
+            System.out.println(u.getUserName());
+            System.out.println(u.getPassword());
+
+
+            Person p = p_repo.save(new Person(0, "password"+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null, u));
 
             for(int y = 0 ; y < nb_c ; y++){
                 CV cv = c_repo.save(new CV(0, "titre"+y, "description"+y, new ArrayList<>(), p));

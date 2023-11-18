@@ -35,4 +35,7 @@ public class PersonDTO {
 
     @JsonManagedReference
     private List<CVDTO> cvs;
+
+    @JsonView(View.Public.class)
+    private XUserDTO self;
 }

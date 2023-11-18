@@ -10,12 +10,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Data
@@ -45,4 +48,9 @@ public class Person {
 	@OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<CV> cvs;
+
+	@OneToOne
+    @JsonBackReference
+    @NonNull
+	private XUser self;
 }

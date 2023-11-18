@@ -85,7 +85,7 @@ public class TestRestController {
 
     @Test
     public void testPostPerson(){
-        Person p = new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>());
+        Person p = new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null);
         ResponseEntity<Person> response = rest.postForEntity(url+"/persons", p, Person.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -100,7 +100,7 @@ public class TestRestController {
     // todo corriger pour que le test fonctionne
     @Test
     public void testPostPersonAlreadyExisting(){
-        Person p = new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>());
+        Person p = new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null);
         ResponseEntity<Person> response = rest.postForEntity(url+"/persons", p, Person.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -117,7 +117,7 @@ public class TestRestController {
     // todo corriger pour que le test fonctionne
     @Test
     public void testPutPerson(){
-        Person p = new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>());
+        Person p = new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null);
         ResponseEntity<Person> response = rest.postForEntity(url+"/persons", p, Person.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -138,7 +138,7 @@ public class TestRestController {
 
     @Test
     public void testDeletePerson(){
-        Person p = rest.postForEntity(url+"/persons", new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>()), Person.class).getBody();
+        Person p = rest.postForEntity(url+"/persons", new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null), Person.class).getBody();
 
         rest.getForEntity(url+"/persons/"+p.getId(), Person.class);
         rest.delete(url+"/persons/"+p.getId());

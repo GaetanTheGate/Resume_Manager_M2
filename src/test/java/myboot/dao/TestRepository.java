@@ -46,11 +46,11 @@ public class TestRepository {
     }
 
     private Person createAndSavePerson(){
-        return p_repo.save(new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>()));
+        return p_repo.save(new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null));
     }
 
     private Person createPerson(){
-        return new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>());
+        return new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null);
     }
 
     @BeforeEach
@@ -68,7 +68,7 @@ public class TestRepository {
 
     @Test
     public void testBasicAddAndRemoveOnAllEntityWithLink(){
-            Person p = p_repo.save(new Person(0, "password", "Name", "FirstName", "mail", "web", null, new ArrayList<>()));
+            Person p = p_repo.save(new Person(0, "password", "Name", "FirstName", "mail", "web", null, new ArrayList<>(), null));
             CV cv = c_repo.save(new CV(0, "test", "test", new ArrayList<>(), p));
             Activity a = a_repo.save(new Activity(0, 2000, "test", "test", "description test", "test"+".fr", cv));
 
@@ -144,7 +144,7 @@ public class TestRepository {
         clearTables();
 
         for(int x = 0 ; x < nb_p ; x++){
-            Person p = p_repo.save(new Person(0, "password"+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null));
+            Person p = p_repo.save(new Person(0, "password"+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null, null));
 
             for(int y = 0 ; y < nb_c ; y++){
                 CV cv = c_repo.save(new CV(0, "test", "test", new ArrayList<>(), p));

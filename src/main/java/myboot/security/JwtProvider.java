@@ -28,7 +28,6 @@ import myboot.model.XUser;
  * Création/vérification/gestion d'un JWT
  */
 @Component
-@Profile("usejwt")
 public class JwtProvider {
 
 	/**

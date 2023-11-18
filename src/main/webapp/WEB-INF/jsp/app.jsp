@@ -13,23 +13,44 @@
             <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('activity')">Activitees</a>
         </div>        
         <a class="navbar-brand" href="#" v-on:click="openLogin()">Se connecter</a>
+        <a class="navbar-brand" href="#" v-on:click="openSignup()">S'inscrire</a>
         <a class="navbar-brand d-inline-block align-top" href="${home}">Se deconnecter</a>
     </nav>
 
     <!-- Login section -->
-    <div ref="test" class="form-popup" v-if="login">
-        <form class="form-container">
+    <div ref="test" class="form-popup" v-if="show_login">
+        <div class="form-container">
           <h1>Se connecter</h1>
       
-          <label for="email"><b>Identifiant</b></label>
-          <input type="text" placeholder="identifiant" name="email" class="form-control" required>
+          <label><b>Identifiant</b></label>
+          <input v-model="username" type="text" placeholder="identifiant" class="form-control" required>
       
-          <label for="psw"><b>Mot de passe</b></label>
-          <input type="password" placeholder="mot de passe" name="psw" class="form-control" required>
+          <label><b>Mot de passe</b></label>
+          <input v-model="password" type="password" placeholder="mot de passe" class="form-control" required>
       
-          <button class="btn">Login</button>
-          <button class="btn cancel" v-on:click="closeLogin()">Close</button>
-        </form>
+          <button class="btn" v-on:click="login(username, password)">S'inscrire</button>
+          <button class="btn cancel" v-on:click="closeLogin()">Fermer</button>
+        </div>
+    </div>
+
+
+    <!-- Signup section -->
+    <div ref="test" class="form-popup" v-if="show_signup">
+        <div class="form-container">
+          <h1>Creer un compte</h1>
+      
+          <label><b>Identifiant</b></label>
+          <input v-model="username" type="text" placeholder="identifiant" class="form-control" required>
+      
+          <label><b>Mot de passe</b></label>
+          <input v-model="password" type="password" placeholder="mot de passe" class="form-control" required>
+      
+          <label><b>Verifier votre mot de passe</b></label>
+          <input v-model="password2" type="password" placeholder="mot de passe" class="form-control" required>
+      
+          <button class="btn" v-on:click="signup(username, password, password2)">S'inscrire</button>
+          <button class="btn cancel" v-on:click="closeLog()">Fermer</button>
+        </div>
     </div>
 
     <div class="container margin_small">
