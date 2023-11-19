@@ -1,108 +1,34 @@
-<%@ include file="/WEB-INF/jsp/header.jsp"%>
+<%@ include file="/WEB-INF/jsp/general/header.jsp"%>
 
 <c:url var="app" value="/app.js" />
 
 <div id="myApp">
     <!-- Nav bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="${home}">LOGO</a>  
-        <a class="navbar-brand dropdown-toggle" id="navbarDropdownMenuLink" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rechercher</a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('person')">Personnes</a>
-            <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('cv')">CVs</a>
-            <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('activity')">Activitees</a>
-        </div>        
-        <a class="navbar-brand" href="#" v-on:click="openLogin()">Se connecter</a>
-        <a class="navbar-brand" href="#" v-on:click="openSignup()">S'inscrire</a>
-        <a class="navbar-brand d-inline-block align-top" href="${home}">Se deconnecter</a>
-    </nav>
+    <%@ include file="/WEB-INF/jsp/general/navbar.jsp"%>
 
     <!-- Login section -->
     <div ref="test" class="form-popup" v-if="show_login">
-        <div class="form-container">
-          <h1>Se connecter</h1>
-      
-          <label><b>Identifiant</b></label>
-          <input v-model="username" type="text" placeholder="identifiant" class="form-control" required>
-      
-          <label><b>Mot de passe</b></label>
-          <input v-model="password" type="password" placeholder="mot de passe" class="form-control" required>
-      
-          <button class="btn" v-on:click="login(username, password)">S'inscrire</button>
-          <button class="btn cancel" v-on:click="closeLog()">Fermer</button>
-        </div>
+        <%@ include file="/WEB-INF/jsp/popUp/popUpSignIn.jsp"%>
     </div>
-
 
     <!-- Signup section -->
     <div ref="test" class="form-popup" v-if="show_signup">
-        <div class="form-container">
-          <h1>Creer un compte</h1>
-      
-          <label><b>Identifiant</b></label>
-          <input v-model="username" type="text" placeholder="identifiant" class="form-control" required>
-      
-          <label><b>Mot de passe</b></label>
-          <input v-model="password" type="password" placeholder="mot de passe" class="form-control" required>
-      
-          <label><b>Verifier votre mot de passe</b></label>
-          <input v-model="password2" type="password" placeholder="mot de passe" class="form-control" required>
-      
-          <button class="btn" v-on:click="signup(username, password, password2)">S'inscrire</button>
-          <button class="btn cancel" v-on:click="closeLog()">Fermer</button>
-        </div>
+        <%@ include file="/WEB-INF/jsp/popUp/popUpSignUp.jsp"%>
     </div>
 
     <div class="container margin_small">
-
         <!-- Display search bar -->
         <div v-if="search != null">
             <div v-if="search == 'person'">
-                <h1>Rechercher des personnes :</h1>
-                <div class="form-group">
-                    <label>Prenom :</label>
-                    <input v-model.trim="elem1" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <label>Nom :</label>
-                    <input v-model.trim="elem2" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <button v-on:click="searchPerson(elem1, elem2)" class="btn btn-primary">Rechercher</button>
-                    <button v-on:click="closeSearchBar()" class="btn btn-secondary">Fermer recherche</button>
-                </div>
+                <%@ include file="/WEB-INF/jsp/searchEntity/searchPerson.jsp"%>
             </div>
 
             <div v-if="search == 'cv'">
-                <h1>Rechercher des CVs :</h1>
-                <div class="form-group">
-                    <label>Titre du CV :</label>
-                    <input v-model.trim="elem1" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <label>Description du CV :</label>
-                    <input v-model.trim="elem2" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <button v-on:click="searchCV(elem1, elem2)" class="btn btn-primary">Rechercher</button>
-                    <button v-on:click="closeSearchBar()" class="btn btn-secondary">Fermer recherche</button>
-                </div>
+                <%@ include file="/WEB-INF/jsp/searchEntity/searchCv.jsp"%>
             </div>
             
             <div v-if="search == 'activity'">
-                <h1>Rechercher des activitees :</h1>
-                <div class="form-group">
-                    <label>Titre de l'activitee :</label>
-                    <input v-model.trim="elem1" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <label>Annee minimum de l'activitee :</label>
-                    <input v-model.trim="elem2" class="form-control"/>
-                </div>
-                <div class="form-group">
-                    <button v-on:click="searchActivity(elem1, elem2)" class="btn btn-primary">Rechercher</button>
-                    <button v-on:click="closeSearchBar()" class="btn btn-secondary">Fermer recherche</button>
-                </div>
+                <%@ include file="/WEB-INF/jsp/searchEntity/searchActivity.jsp"%>
             </div>
             <hr class="margin_small thick"/>
         </div>
@@ -112,46 +38,27 @@
             <button v-on:click="setPageType('showing')" class="btn btn-secondary">Retour a la normal</button>
             <!-- If there is no actity -->
             <div v-if="!activity">
-
                 <!-- If there is no cv -->
                 <div v-if="!cv">
-
                     <!-- If there is no person -->
                     <div v-if="!person">
-
                     </div>
 
                     <!-- If there is a person -->
                     <div v-if="person">
-                        <p><label>Prenom : </label><input type="text" v-model.trim="person.firstname" class="form-control"/></p>
-                        <p><label>Nom : </label><input type="text" v-model.trim="person.name" class="form-control"/></p>
-                        <p><label>Mail : </label><input type="text" v-model.trim="person.mail" class="form-control"/></p>
-                        <p><label>Site web : </label><input type="text" v-model.trim="person.website" class="form-control"/></p>
-                        <p><label>Date de naissance : </label><input type="date" v-model.trim="person.birthday" class="form-control"/></p>
-                        <p><button v-on:click="savePerson()" class="btn btn-primary">Enregistrer</button></p>
-                        <button v-on:click="createCv()" class="btn btn-warning">Ajouter un nouveau CV</button>
-                </div>
+                        <%@ include file="/WEB-INF/jsp/formEntity/formPerson.jsp"%>
+                    </div>
                 </div>
 
                 <!-- If there is a cv -->
                 <div v-if="cv">
-                    <p><label>Titre :</label><input type="text" v-model.trim="cv.title" class="form-control"/></p>
-                    <p><label>Description :</label><input type="text" v-model.trim="cv.description" class="form-control"/></p>
-                    <p><button v-on:click="saveCv()" class="btn btn-primary">Enregistrer</button>
-                    <button v-on:click="deleteCv()" class="btn btn-danger">Supprimer ce CV</button></p>
-                    <button v-on:click="createActivity()" class="btn btn-warning">Ajouter une nouvelle activite</button>
+                    <%@ include file="/WEB-INF/jsp/formEntity/formCv.jsp"%>
                 </div>
             </div>
 
             <!-- If there is an actity -->
             <div v-if="activity">
-                <p><label>Titre :</label><input type="text" v-model.trim="activity.title" class="form-control"/></p>
-                <p><label>Type :</label><input type="text" v-model.trim="activity.type" class="form-control"/></p>
-                <p><label>Annee :</label><input type="number" inputmode="numeric" v-model.trim="activity.year" class="form-control"/></p>
-                <p><label>Site web :</label><input type="text" v-model.trim="activity.website" class="form-control"/></p>
-                <p><label>Description :</label><input type="text" v-model.trim="activity.description" class="form-control"/></p>
-                <p><button v-on:click="saveActivity()" class="btn btn-primary">Enregistrer</button>
-                <button v-on:click="deleteActivity()" class="btn btn-danger">Supprimer cette activite</button></p>
+                <%@ include file="/WEB-INF/jsp/formEntity/formActivity.jsp"%>
             </div>
         </div>
         
@@ -161,41 +68,27 @@
                 class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button>
             <!-- If there is no actity -->
             <div v-if="!activity">
-
                 <!-- If there is no cv -->
                 <div v-if="!cv">
-
                     <!-- If there is no person -->
                     <div v-if="!person">
-
                     </div>
 
                     <!-- If there is a person -->
                     <div v-if="person">
-                        
-                        <h2><b>{{person.name}}</b> {{person.firstname}}</h2>
-                        <hr class="light"/>
-                        <p v-if="person.mail"><u>Adresse electronique :</u> {{person.mail}}</p>
-                        <p v-if="person.website"><u>Site web personnel :</u> <a :href="'http://' + person.website">{{person.website}}</a></p>
+                        <%@ include file="/WEB-INF/jsp/showEntity/showPerson.jsp"%>
                     </div>
                 </div>
 
                 <!-- If there is a cv -->
                 <div v-if="cv">
-                    <h2><b>{{cv.title}}</b></h2>
-                    <hr class="light"/>
-                    <p v-if="cv.description" class="secondary_text">{{cv.description}}</p>
+                    <%@ include file="/WEB-INF/jsp/showEntity/showCv.jsp"%>
                 </div>
             </div>
 
             <!-- If there is an actity -->
             <div v-if="activity">
-                <h2><b>{{activity.title}}</b></h2>
-                <hr class="light"/>
-                <p v-if="activity.year"><u>Annee :</u> {{activity.year}}</p>
-                <p v-if="activity.website"><u>Site web liee :</u> <a :href="'http://' + activity.website">{{activity.website}}</a></p>
-                <p v-if="activity.description"><u>Description de l'activite :</u></p>
-                <p v-if="activity.description" class="secondary_text">{{activity.description}}</p>
+                <%@ include file="/WEB-INF/jsp/showEntity/showActivity.jsp"%>
             </div>
         </div>
         
@@ -205,29 +98,14 @@
             <div v-if="(list != null)">
                 <hr class="margin_small thick"/>
                 <div class="margin_big">
-                    <!-- If list isn't empty -->
-                    <div v-if="(show != null)">
-                        <table class="table">
-                            <tr class ="thead-dark">
-                                <th v-for="(item, key, index) in show.fields">{{item}}</th>
-                            </tr>
-                            <tr v-for="element in list" v-on:click="show.onClick(element.id)" class="clickable">
-                                <td v-for="(item, key, index) in show.fields">{{element[key]}}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <!-- If list is empty -->
-                    <div v-if="show == null">
-    
-                    </div>
+                    <%@ include file="/WEB-INF/jsp/general/listElement.jsp"%>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
 
 <script src="${app}" type="module"></script>
 
-<%@ include file="/WEB-INF/jsp/footer.jsp"%>
+<%@ include file="/WEB-INF/jsp/general/footer.jsp"%>
