@@ -3,6 +3,7 @@ package myboot.dto;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -36,6 +37,6 @@ public class PersonDTO {
     @JsonManagedReference
     private List<CVDTO> cvs;
 
-    @JsonView(View.Public.class)
+    @JsonBackReference
     private XUserDTO self;
 }

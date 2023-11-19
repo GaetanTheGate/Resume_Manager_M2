@@ -29,7 +29,7 @@
           <input v-model="password" type="password" placeholder="mot de passe" class="form-control" required>
       
           <button class="btn" v-on:click="login(username, password)">S'inscrire</button>
-          <button class="btn cancel" v-on:click="closeLogin()">Fermer</button>
+          <button class="btn cancel" v-on:click="closeLog()">Fermer</button>
         </div>
     </div>
 
@@ -107,8 +107,13 @@
             <hr class="margin_small thick"/>
         </div>
 
+        <!-- Display the forms for modifying something -->
+        <div v-if="pageType == 'modifying'">
+
+        </div>
+        
         <!-- Display information about something -->
-        <div>
+        <div v-if="pageType == 'showing'">
             <!-- If there is no actity -->
             <div v-if="!activity">
 
@@ -122,7 +127,8 @@
 
                     <!-- If there is a person -->
                     <div v-if="person">
-                        <h2><b>{{person.name}}</b> {{person.firstname}}</h2>
+                        
+                        <h2><b>{{person.name}}</b> {{person.firstname}}<button class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button></h2>
                         <hr class="light"/>
                         <p v-if="person.mail"><u>Adresse electronique :</u> {{person.mail}}</p>
                         <p v-if="person.website"><u>Site web personnel :</u> <a :href="'http://' + person.website">{{person.website}}</a></p>
@@ -131,7 +137,7 @@
 
                 <!-- If there is a cv -->
                 <div v-if="cv">
-                    <h2><b>{{cv.title}}</b></h2>
+                    <h2><b>{{cv.title}}</b><button class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button></h2>
                     <hr class="light"/>
                     <p v-if="cv.description" class="secondary_text">{{cv.description}}</p>
                 </div>
@@ -139,7 +145,7 @@
 
             <!-- If there is an actity -->
             <div v-if="activity">
-                <h2><b>{{activity.title}}</b></h2>
+                <h2><b>{{activity.title}}</b><button class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button></h2>
                 <hr class="light"/>
                 <p v-if="activity.year"><u>Annee :</u> {{activity.year}}</p>
                 <p v-if="activity.website"><u>Site web liee :</u> <a :href="'http://' + activity.website">{{activity.website}}</a></p>

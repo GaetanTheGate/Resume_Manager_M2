@@ -53,9 +53,6 @@ public class UtilityController implements ErrorController {
             var encoder = new BCryptPasswordEncoder(12);
 
             XUser u = u_repo.save(new XUser("p"+x, encoder.encode("psw"+x), Set.of("USER"), null));
-            System.out.println(u.getUserName());
-            System.out.println(u.getPassword());
-
 
             Person p = p_repo.save(new Person(0, "password"+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null, u));
 

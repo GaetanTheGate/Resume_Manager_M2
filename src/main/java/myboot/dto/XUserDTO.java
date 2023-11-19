@@ -2,6 +2,7 @@ package myboot.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +18,6 @@ public class XUserDTO {
 	private String username;
 	private List<String> roles;
 
-    @JsonView(View.Public.class)
+    @JsonManagedReference
     private PersonDTO self;
 }

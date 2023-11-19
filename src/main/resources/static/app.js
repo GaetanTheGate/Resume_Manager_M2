@@ -6,6 +6,8 @@ const myApp = {
         return {
             axios:      null,
             axiosLogin: null,
+
+            pageType:   null,
             
             person:     null,
             cv:         null,
@@ -34,16 +36,20 @@ const myApp = {
 
         this.axiosLogin = axios.create({
             baseURL: 'http://localhost:8081/secu-users',
-            timeout: 5000,
+            timeout: 1000,
             headers: { 'Authorization': 'Bearer ' },
         });
 
-        this.closeLogin();
-        this.closeSignup();
+        this.setPageType("showing");
+        this.closeLog();
         this.setNothing();
     },
 
     methods: {
+        setPageType: function(type){
+            this.pageType = type;
+        },
+
         setListAndShow: function(l, s){
             this.list = l;
             if(this.list.length != 0) this.show = s;
@@ -200,9 +206,19 @@ const myApp = {
             this.axiosLogin.post("/signup", {username:username, password:password, self:null}).then(s =>{
                 console.log(s);
             });
+        },
 
+        isMySelf: function(person){
+            return true;
+        },
 
-        }
+        isMyCv: function(cv){
+            return true;
+        },
+
+        isMyActivity: function(activity){
+            return true;
+        },
     }
 }
 
