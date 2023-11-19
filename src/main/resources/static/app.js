@@ -42,7 +42,8 @@ const myApp = {
 
         this.setPageType("showing");
         this.closeLog();
-        this.setNothing();
+        if(this.person != null) console.log("TESSSSSSST");
+        else this.setNothing();
     },
 
     methods: {
@@ -218,6 +219,66 @@ const myApp = {
 
         isMyActivity: function(activity){
             return true;
+        },
+
+        savePerson: function(){
+            this.axios.put("persons", this.person).then(p => {
+                this.person = p.data;
+            });
+        },
+
+        saveCv: function(){
+            this.axios.put("cv", this.cv).then(c => {
+                this.cv = c.data;
+            });
+        },
+
+        saveActivity: function(){
+            this.axios.put("activities", this.activity).then(a => {
+                this.activity = a.data;
+            });
+        },
+
+        createPerson: function(){
+            this.axios.post("cvs/", {}).then(p => {
+                this.person = p.data;
+            });
+        },
+
+        createCv: function(){
+            this.axios.post("cvs/", {}).then(c => {
+                this.cv = c.data;
+            });
+        },
+
+        createActivity: function(){
+            this.axios.post("activites/", {}).then(a => {
+                this.activity = a.data;
+            });
+        },
+
+        deletePerson: function(){
+            if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette personne ?')){
+                this.axios.delete("persons/"+this.person.id);
+                this.person = null;
+                console.log("SUPPRIMER")
+            }
+        },
+
+        deleteCv: function(){
+            if(confirm('Êtes-vous sûr de vouloir supprimer définitivement ce CV ?')){
+                this.axios.delete("cvs/"+this.cv.id);
+                this.cv = null;
+                console.log("SUPPRIMER")
+            }
+        },
+
+        deleteActivity: function(){
+            if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette activité ?')){
+                this.axios.delete("activities/"+this.activity.id);
+                this.activity = null;
+                console.log("SUPPRIMER")
+            }
         },
     }
 }

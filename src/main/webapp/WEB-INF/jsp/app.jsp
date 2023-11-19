@@ -109,11 +109,56 @@
 
         <!-- Display the forms for modifying something -->
         <div v-if="pageType == 'modifying'">
+            <button v-on:click="setPageType('showing')" class="btn btn-secondary">Retour a la normal</button>
+            <!-- If there is no actity -->
+            <div v-if="!activity">
 
+                <!-- If there is no cv -->
+                <div v-if="!cv">
+
+                    <!-- If there is no person -->
+                    <div v-if="!person">
+
+                    </div>
+
+                    <!-- If there is a person -->
+                    <div v-if="person">
+                        <p><label>Prenom : </label><input type="text" v-model.trim="person.firstname" class="form-control"/></p>
+                        <p><label>Nom : </label><input type="text" v-model.trim="person.name" class="form-control"/></p>
+                        <p><label>Mail : </label><input type="text" v-model.trim="person.mail" class="form-control"/></p>
+                        <p><label>Site web : </label><input type="text" v-model.trim="person.website" class="form-control"/></p>
+                        <p><label>Date de naissance : </label><input type="date" v-model.trim="person.birthday" class="form-control"/></p>
+                        <p><button v-on:click="savePerson()" class="btn btn-primary">Enregistrer</button></p>
+                        <button v-on:click="createCv()" class="btn btn-warning">Ajouter un nouveau CV</button>
+                </div>
+                </div>
+
+                <!-- If there is a cv -->
+                <div v-if="cv">
+                    <p><label>Titre :</label><input type="text" v-model.trim="cv.title" class="form-control"/></p>
+                    <p><label>Description :</label><input type="text" v-model.trim="cv.description" class="form-control"/></p>
+                    <p><button v-on:click="saveCv()" class="btn btn-primary">Enregistrer</button>
+                    <button v-on:click="deleteCv()" class="btn btn-danger">Supprimer ce CV</button></p>
+                    <button v-on:click="createActivity()" class="btn btn-warning">Ajouter une nouvelle activite</button>
+                </div>
+            </div>
+
+            <!-- If there is an actity -->
+            <div v-if="activity">
+                <p><label>Titre :</label><input type="text" v-model.trim="activity.title" class="form-control"/></p>
+                <p><label>Type :</label><input type="text" v-model.trim="activity.type" class="form-control"/></p>
+                <p><label>Annee :</label><input type="number" inputmode="numeric" v-model.trim="activity.year" class="form-control"/></p>
+                <p><label>Site web :</label><input type="text" v-model.trim="activity.website" class="form-control"/></p>
+                <p><label>Description :</label><input type="text" v-model.trim="activity.description" class="form-control"/></p>
+                <p><button v-on:click="saveActivity()" class="btn btn-primary">Enregistrer</button>
+                <button v-on:click="deleteActivity()" class="btn btn-danger">Supprimer cette activite</button></p>
+            </div>
         </div>
         
         <!-- Display information about something -->
         <div v-if="pageType == 'showing'">
+            <button v-if="person != null && isMySelf(person) && isMyCv(cv) && isMyActivity(activity)"
+                class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button>
             <!-- If there is no actity -->
             <div v-if="!activity">
 
@@ -128,7 +173,7 @@
                     <!-- If there is a person -->
                     <div v-if="person">
                         
-                        <h2><b>{{person.name}}</b> {{person.firstname}}<button class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button></h2>
+                        <h2><b>{{person.name}}</b> {{person.firstname}}</h2>
                         <hr class="light"/>
                         <p v-if="person.mail"><u>Adresse electronique :</u> {{person.mail}}</p>
                         <p v-if="person.website"><u>Site web personnel :</u> <a :href="'http://' + person.website">{{person.website}}</a></p>
@@ -137,7 +182,7 @@
 
                 <!-- If there is a cv -->
                 <div v-if="cv">
-                    <h2><b>{{cv.title}}</b><button class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button></h2>
+                    <h2><b>{{cv.title}}</b></h2>
                     <hr class="light"/>
                     <p v-if="cv.description" class="secondary_text">{{cv.description}}</p>
                 </div>
@@ -145,7 +190,7 @@
 
             <!-- If there is an actity -->
             <div v-if="activity">
-                <h2><b>{{activity.title}}</b><button class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button></h2>
+                <h2><b>{{activity.title}}</b></h2>
                 <hr class="light"/>
                 <p v-if="activity.year"><u>Annee :</u> {{activity.year}}</p>
                 <p v-if="activity.website"><u>Site web liee :</u> <a :href="'http://' + activity.website">{{activity.website}}</a></p>
