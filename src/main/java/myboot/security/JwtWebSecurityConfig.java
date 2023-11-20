@@ -26,6 +26,7 @@ import myboot.model.XUser;
  */
 @Configuration
 @EnableWebSecurity
+@Profile("usejwt")
 public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -39,27 +40,24 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@PostConstruct
 	public void init() {
 		var encoder = passwordEncoder();
-		var aa = new XUser("aaa", encoder.encode("aaa"), Set.of("ADMIN", "USER"), null);
-		var bb = new XUser("bbb", encoder.encode("bbb"), Set.of("USER"), null);
-		userRepo.save(aa);
-		userRepo.save(bb);
+		var admin = new XUser("admin", encoder.encode("admin"), Set.of("ADMIN", "USER"), null);
+		userRepo.save(admin);
 		logger.debug("--- INIT SPRING SECURITY JWT");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
 		// Pas de vérification CSRF (cross site request forgery)
 		http.csrf().disable();
 
-		// Spring security de doit gérer les sessions
+		// Spring security se doit gérer les sessions
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// Déclaration des end-points
 		http.authorizeRequests()//
 				.antMatchers("/secu-users/login").permitAll()//
 				.antMatchers("/secu-users/signup").permitAll()//
-				.antMatchers("/secu-users/**").authenticated()//
+				.antMatchers("/secu-users/**").permitAll()//
 				// Autoriser le reste...
 				.anyRequest().permitAll();
 

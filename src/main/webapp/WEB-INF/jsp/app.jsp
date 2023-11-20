@@ -64,7 +64,7 @@
         
         <!-- Display information about something -->
         <div v-if="pageType == 'showing'">
-            <button v-if="person != null && isMySelf(person) && isMyCv(cv) && isMyActivity(activity)"
+            <button v-if="show_modify_button"
                 class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button>
             <!-- If there is no actity -->
             <div v-if="!activity">

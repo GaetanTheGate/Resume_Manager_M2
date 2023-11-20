@@ -21,6 +21,10 @@ const myApp = {
 
             show_login: null,
             show_signup:null,
+
+            show_modify_button: null,
+
+            token:   null,
         }
     },
 
@@ -30,20 +34,19 @@ const myApp = {
 
         this.axios = axios.create({
             baseURL: 'http://localhost:8081/api/',
-            timeout: 1000,
+            timeout: 5000,
             headers: { 'Content-show': 'application/json' },
         });
 
         this.axiosLogin = axios.create({
-            baseURL: 'http://localhost:8081/secu-users',
-            timeout: 1000,
-            headers: { 'Authorization': 'Bearer ' },
+            baseURL: 'http://localhost:8081/secu-users/',
+            timeout: 5000,
+            headers: { },
         });
 
         this.setPageType("showing");
         this.closeLog();
-        if(this.person != null) console.log("TESSSSSSST");
-        else this.setNothing();
+        this.setNothing();
     },
 
     methods: {
@@ -115,6 +118,8 @@ const myApp = {
             this.axios.get("persons").then(l => {
                 this.resetPerson();
                 this.setListAndShow(l.data, this.getPersonShow());
+                
+                this.show_modify_button = false;
             });
         },
 
@@ -124,6 +129,8 @@ const myApp = {
                 this.resetCV();
                 this.person = p.data;
                 this.setListAndShow(this.person.cvs, this.getCVShow());
+
+                this.computeShowModifyButton();
             });
         },
 
@@ -133,6 +140,8 @@ const myApp = {
                 this.resetActivity();
                 this.cv = c.data;
                 this.setListAndShow(this.cv.activities, this.getActivityShow());
+                
+                this.computeShowModifyButton();
             });
         },
 
@@ -141,6 +150,8 @@ const myApp = {
             this.axios.get("activities/"+id).then(a => {
                 this.activity = a.data;
                 this.setListAndShow([], null);
+                
+                this.computeShowModifyButton();
             });
         },
 
@@ -162,8 +173,8 @@ const myApp = {
         openSearchBarFor: function(name) {
             this.search = name;
 
-            this.elem1=  '';
-            this.elem2=  '';
+            this.elem1='';
+            this.elem2='';
         },
 
         closeSearchBar: function() {
@@ -190,35 +201,39 @@ const myApp = {
         },
 
         login: function(username, password){
-            this.axiosLogin.post("/login?username="+username+"&password="+password, {}).then(s => {
-                console.log(s);
-            });
+            try {
+                this.axiosLogin.post("login?username="+username+"&password="+password, {}).then(s => {
+                    this.token = s.data;
+
+                    this.closeLog();
+                    this.computeShowModifyButton();
+                });
+            } catch (error) {
+                console.log(error);
+            }
+            
         },
 
         logout: function(){
-            this.axiosLogin.get("/logout");
+            this.axiosLogin.get("logout", { Authorization:"Bearer " + this.token }).then(() => {
+                this.token = null;
+
+                this.computeShowModifyButton();
+            });
         },
 
-        signup: function(username, password, password2){
+        signup: async function(username, password, password2){
             if(password != password2){
                 return;
             }
 
-            this.axiosLogin.post("/signup", {username:username, password:password, self:null}).then(s =>{
-                console.log(s);
-            });
-        },
+            const s = await this.axiosLogin.post("signup", {"username":username, "password":password});
 
-        isMySelf: function(person){
-            return true;
-        },
+            this.token = s.data;
+            this.closeLog();
 
-        isMyCv: function(cv){
-            return true;
-        },
-
-        isMyActivity: function(activity){
-            return true;
+            const u = await this.axiosLogin.get("me", { headers : { Authorization:"Bearer " + this.token }});
+            this.setPerson(u.data.self.id);
         },
 
         savePerson: function(){
@@ -259,27 +274,64 @@ const myApp = {
 
         deletePerson: function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette personne ?')){
-                this.axios.delete("persons/"+this.person.id);
-                this.person = null;
-                console.log("SUPPRIMER")
+                this.axios.delete("persons/"+this.person.id).then(() => {
+                    this.setNothing();
+                    console.log("SUPPRIMER");
+                });
             }
         },
 
         deleteCv: function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement ce CV ?')){
-                this.axios.delete("cvs/"+this.cv.id);
-                this.cv = null;
-                console.log("SUPPRIMER")
+                this.axios.delete("cvs/"+this.cv.id).then(() => {
+                    this.setPerson(this.person.id);
+                    console.log("SUPPRIMER");
+                });
             }
         },
 
         deleteActivity: function(){
-            if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette activité ?')){
-                this.axios.delete("activities/"+this.activity.id);
-                this.activity = null;
-                console.log("SUPPRIMER")
+            if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette activitée ?')){
+                this.axios.delete("activities/"+this.activity.id).then(() => {
+                    this.setCV(this.cv.id);
+                    console.log("SUPPRIMER");
+                });
             }
         },
+
+        computeShowModifyButton: function(){
+            if ( !(this.person && this.token)) {
+                this.show_modify_button = false;
+                this.setPageType("showing");
+            }
+            else {
+                this.show_modify_button = false;
+
+                this.axiosLogin.get("me", { headers : { Authorization:"Bearer " + this.token }}).then(u => {
+                    let user = u.data;
+    
+                    if(user.roles.includes("ADMIN"))
+                        this.show_modify_button = true;
+
+                    else {
+                        let p;
+                        if(this.activity)
+                            p = this.activity.cv.owner;
+                        else if(this.cv)
+                            p = this.cv.owner;
+                        else
+                            p = this.person;
+
+                        if(user.self){
+                            this.show_modify_button = p.id == user.self.id;
+                        }
+                    }
+
+                    if(!this.show_modify_button)
+                        this.setPageType("showing");
+                });
+            }
+        }
     }
 }
 

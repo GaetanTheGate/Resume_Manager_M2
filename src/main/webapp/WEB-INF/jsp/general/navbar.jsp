@@ -6,7 +6,7 @@
         <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('cv')">CVs</a>
         <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('activity')">Activitees</a>
     </div>        
-    <a class="navbar-brand" href="#" v-on:click="openLogin()">Se connecter</a>
-    <a class="navbar-brand" href="#" v-on:click="openSignup()">S'inscrire</a>
-    <a class="navbar-brand d-inline-block align-top" href="${home}">Se deconnecter</a>
+    <a v-if="!token" class="navbar-brand" href="#" v-on:click="openLogin()">Se connecter</a>
+    <a v-if="!token" class="navbar-brand" href="#" v-on:click="openSignup()">S'inscrire</a>
+    <a v-if="token" class="navbar-brand" href="#" v-on:click="logout()">Se deconnecter</a>
 </nav>

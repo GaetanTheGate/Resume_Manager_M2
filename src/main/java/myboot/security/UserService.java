@@ -15,6 +15,7 @@ import myboot.dao.XUserRepository;
 import myboot.model.XUser;
 
 @Service
+@Profile("usejwt")
 public class UserService {
 
 	@Autowired

@@ -1,11 +1,15 @@
 package myboot.web;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import myboot.model.Person;
 import myboot.model.XUser;
+import myboot.dao.PersonRepository;
 import myboot.dto.XUserDTO;
+import myboot.dto.XUserSignUpDTO;
+import myboot.security.JwtProvider;
 import myboot.security.UserService;
 
 /**
@@ -24,23 +32,13 @@ import myboot.security.UserService;
  */
 @RestController
 @RequestMapping("/secu-users")
+@Profile("usejwt")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 
 	private ModelMapper modelMapper = new ModelMapper();
-
-
-	@GetMapping("")
-	public String test(){
-		return "tets";
-	}
-
-	@PostMapping("")
-	public String tester(){
-		return "tets";
-	}
 
 	/**
 	 * Authentification et récupération d'un JWT
@@ -49,20 +47,33 @@ public class UserController {
 	public String login(//
 			@RequestParam String username, //
 			@RequestParam String password) {
-		try {
-					return userService.login(username, password);
-
-		} catch (Exception e) {
-			return "salut : " + e.toString();
-		}
+		return userService.login(username, password);
 	}
+
+
+	@Autowired
+	PasswordEncoder encoder;
+
+	@Autowired
+	JwtProvider jwtTokenProvider;
+
+	@Autowired
+	PersonRepository p_repo;
 
 	/**
 	 * Ajouter un utilisateur
 	 */
 	@PostMapping("/signup")
-	public String signup(@RequestBody XUserDTO user) {
-		return userService.signup(modelMapper.map(user, XUser.class));
+	public String signup(@RequestBody XUserSignUpDTO user) {
+		XUser u = modelMapper.map(user, XUser.class);
+		u.setRoles(Set.of("USER"));
+
+		String token = userService.signup(u);
+
+		u = userService.search(jwtTokenProvider.getUsername(token));
+		p_repo.save(new Person(0, "", user.getUsername(), user.getUsername(), "", "", null, new ArrayList<>(), u));
+
+		return token;
 	}
 
 	/**
