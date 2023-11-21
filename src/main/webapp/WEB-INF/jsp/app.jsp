@@ -35,6 +35,7 @@
 
         <!-- Display the forms for modifying something -->
         <div v-if="pageType == 'modifying'">
+            <button v-if="person" class="btn btn-primary" v-on:click="goBack()">Retour arriere</button>
             <button v-on:click="setPageType('showing')" class="btn btn-secondary">Retour a la normal</button>
             <!-- If there is no actity -->
             <div v-if="!activity">

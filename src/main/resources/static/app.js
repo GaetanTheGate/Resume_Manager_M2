@@ -283,18 +283,24 @@ const myApp = {
 
         deletePerson: function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette personne ?')){
+                this.person.cvs.forEach(element => {
+                    this.axios.delete("cvs/"+element.id);
+                });
+
                 this.axios.delete("persons/"+this.person.id).then(() => {
                     this.setNothing();
-                    console.log("SUPPRIMER");
                 });
             }
         },
 
         deleteCv: function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement ce CV ?')){
+                this.cv.activities.forEach(element => {
+                    this.axios.delete("activities/"+element.id);
+                });
+
                 this.axios.delete("cvs/"+this.cv.id).then(() => {
                     this.setPerson(this.person.id);
-                    console.log("SUPPRIMER");
                 });
             }
         },
@@ -303,7 +309,6 @@ const myApp = {
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette activitée ?')){
                 this.axios.delete("activities/"+this.activity.id).then(() => {
                     this.setCV(this.cv.id);
-                    console.log("SUPPRIMER");
                 });
             }
         },
