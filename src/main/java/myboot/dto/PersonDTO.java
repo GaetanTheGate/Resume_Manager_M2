@@ -7,10 +7,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 import myboot.model.View;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PersonDTO {
 
     @JsonView(View.Public.class)
@@ -38,5 +43,6 @@ public class PersonDTO {
     private List<CVDTO> cvs;
 
     @JsonBackReference
+    @Exclude
     private XUserDTO self;
 }
