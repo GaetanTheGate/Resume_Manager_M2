@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 import myboot.model.Person;
 import myboot.model.XUser;
 import myboot.dao.PersonRepository;
+import myboot.dto.CVDTO;
 import myboot.dto.XUserDTO;
 import myboot.dto.XUserSignUpDTO;
 import myboot.security.JwtProvider;
 import myboot.security.UserService;
+import myboot.web.CVRestController.CVNotFoundException;
 
 /**
  * L'API d'authentification
@@ -123,4 +125,19 @@ public class UserController {
 		userService.logout(req);
 
 	}
+
+
+    /// PostMapping
+
+    @PostMapping("/test")
+    public CVDTO postCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
+        System.out.println("----------------------------");
+        System.out.println("----------------------------");
+
+        System.out.println(cvdto);
+
+        System.out.println("----------------------------");
+        System.out.println("----------------------------");
+		return cvdto;
+    }
 }

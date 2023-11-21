@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import myboot.dao.PersonRepository;
 import myboot.dto.PersonDTO;
 import myboot.model.Person;
@@ -65,8 +65,10 @@ public class PersonRestController {
     @PutMapping("")
     public PersonDTO putPerson(@RequestBody PersonDTO pdto) throws PersonNotFoundException {
         Person p = mapper.map(pdto, Person.class);
-        
-        p_repo.findById(p.getId()).orElseThrow(PersonNotFoundException::new);
+
+        Optional<Person> p_data = p_repo.findById(p.getId());
+        p_data.orElseThrow(PersonNotFoundException::new);
+        p.setSelf(p_data.get().getSelf());
 
         return mapper.map(p_repo.save(p), PersonDTO.class);
     }

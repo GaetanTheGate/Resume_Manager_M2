@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import myboot.dao.ActivityRepository;
 import myboot.dto.ActivityDTO;
 import myboot.model.Activity;
@@ -66,7 +66,10 @@ public class ActivityRestController {
     public ActivityDTO putActivity(@RequestBody ActivityDTO adto) throws ActivityNotFoundException {
         Activity a = mapper.map(adto, Activity.class);
 
-        a_repo.findById(a.getId()).orElseThrow(ActivityNotFoundException::new);
+        Optional<Activity> a_data = a_repo.findById(a.getId());
+        a_data.orElseThrow(ActivityNotFoundException::new);
+
+        a.setCv(a_data.get().getCv());
 
         return mapper.map(a_repo.save(a), ActivityDTO.class);
     }

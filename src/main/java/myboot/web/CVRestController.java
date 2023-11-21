@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import myboot.dao.CVRepository;
 import myboot.dto.CVDTO;
 import myboot.model.CV;
@@ -54,7 +54,11 @@ public class CVRestController {
     public CVDTO postCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
         CV cv = mapper.map(cvdto, CV.class);
 
-        Optional.ofNullable(c_repo.findById(cv.getId()).isPresent() ? null : cv).orElseThrow(CVNotFoundException::new);
+
+        Optional<CV> cv_data = c_repo.findById(cv.getId());
+        Optional.ofNullable(cv_data.isPresent() ? null : cv).orElseThrow(CVNotFoundException::new);
+
+        cv.setOwner(cv_data.get().getOwner());
 
         return mapper.map(c_repo.save(cv), CVDTO.class);
     }

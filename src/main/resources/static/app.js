@@ -41,9 +41,9 @@ const myApp = {
         this.axiosLogin = axios.create({
             baseURL: 'http://localhost:8081/secu-users/',
             timeout: 5000,
-            headers: { },
         });
 
+        this.login("admin", "admin");
         this.setPageType("showing");
         this.closeLog();
         this.setNothing();
@@ -135,6 +135,7 @@ const myApp = {
         setPerson: function(id){
             console.log("SetPerson");
             this.axios.get("persons/"+id).then(p => {
+                console.log(p.data);
                 this.resetCV();
                 this.person = p.data;
                 this.setListAndShow(this.person.cvs, this.getCVShow());
@@ -246,46 +247,71 @@ const myApp = {
         },
 
         savePerson: function(){
+            console.log(this.person);
             this.axios.put("persons", this.person).then(p => {
                 this.person = p.data;
             });
         },
 
         saveCv: function(){
-            this.axios.put("cv", this.cv).then(c => {
+            console.log(this.cv);
+            this.axios.put("cvs", this.cv).then(c => {
                 this.cv = c.data;
             });
         },
 
         saveActivity: function(){
+            console.log(this.activity);
             this.axios.put("activities", this.activity).then(a => {
                 this.activity = a.data;
             });
         },
 
         createPerson: function(){
-            this.axios.post("cvs/", {}).then(p => {
-                this.person = p.data;
+            let person = {
+                "name":"default",
+                "firstname":"default",
+                "cvs":[],
+                "self": this.person,
+            };
+
+            this.axios.post("persons", person).then(p => {
+                this.setPerson(p.data.id)
             });
         },
 
         createCv: function(){
-            this.axios.post("cvs/", {}).then(c => {
-                this.cv = c.data;
+            let cv = {
+                "title":"default",
+                "description":"default",
+                "activities":[],
+                "owner": this.person,
+            };
+
+            this.axios.post("cvs", cv).then(c => {
+                this.setCV(c.data.id);
             });
         },
 
         createActivity: function(){
-            this.axios.post("activites/", {}).then(a => {
-                this.activity = a.data;
+            let activity = {
+                "year":2000,
+                "type":"none",
+                "title":"default",
+                "description":"default",
+                "cv": this.cv,
+            };
+
+            this.axios.post("activities", activity).then(a => {
+                this.setActivity(a.data.id);
             });
         },
 
-        deletePerson: function(){
+        deletePerson: async function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette personne ?')){
-                this.person.cvs.forEach(element => {
-                    this.axios.delete("cvs/"+element.id);
-                });
+                await Promise.all(this.person.cvs.map( element =>
+                    this.axios.delete("cvs/"+element.id)
+                ));
 
                 this.axios.delete("persons/"+this.person.id).then(() => {
                     this.setNothing();
@@ -293,11 +319,11 @@ const myApp = {
             }
         },
 
-        deleteCv: function(){
+        deleteCv: async function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement ce CV ?')){
-                this.cv.activities.forEach(element => {
-                    this.axios.delete("activities/"+element.id);
-                });
+                await Promise.all(this.cv.activities.map( element => 
+                    this.axios.delete("activities/"+element.id)
+                ));
 
                 this.axios.delete("cvs/"+this.cv.id).then(() => {
                     this.setPerson(this.person.id);
