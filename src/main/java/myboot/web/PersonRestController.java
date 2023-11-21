@@ -51,24 +51,24 @@ public class PersonRestController {
     /// PostMapping
 
     @PostMapping("")
-    public Person postPerson(@RequestBody PersonDTO pdto) throws PersonNotFoundException {
+    public PersonDTO postPerson(@RequestBody PersonDTO pdto) throws PersonNotFoundException {
         Person p = mapper.map(pdto, Person.class);
 
         Optional.ofNullable(p_repo.findById(p.getId()).isPresent() ? null : p).orElseThrow(PersonNotFoundException::new);
-        return p_repo.save(p);
+
+        return mapper.map(p_repo.save(p), PersonDTO.class);
     }
 
 
     /// PutMapping
 
     @PutMapping("")
-    public Person putPerson(@RequestBody PersonDTO pdto) throws PersonNotFoundException {
-
+    public PersonDTO putPerson(@RequestBody PersonDTO pdto) throws PersonNotFoundException {
         Person p = mapper.map(pdto, Person.class);
         
         p_repo.findById(p.getId()).orElseThrow(PersonNotFoundException::new);
 
-        return p_repo.save(p);
+        return mapper.map(p_repo.save(p), PersonDTO.class);
     }
 
 

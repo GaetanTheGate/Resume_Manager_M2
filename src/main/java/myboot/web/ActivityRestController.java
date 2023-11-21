@@ -51,24 +51,24 @@ public class ActivityRestController {
     /// PostMapping
 
     @PostMapping("")
-    public Activity postActivity(@RequestBody ActivityDTO adto) throws ActivityNotFoundException {
+    public ActivityDTO postActivity(@RequestBody ActivityDTO adto) throws ActivityNotFoundException {
         Activity a = mapper.map(adto, Activity.class);
 
         Optional.ofNullable(a_repo.findById(a.getId()).isPresent() ? null : a).orElseThrow(ActivityNotFoundException::new);
 
-        return a_repo.save(a);
+        return mapper.map(a_repo.save(a), ActivityDTO.class);
     }
 
 
     /// PutMapping
 
     @PutMapping("")
-    public Activity putActivity(@RequestBody ActivityDTO adto) throws ActivityNotFoundException {
+    public ActivityDTO putActivity(@RequestBody ActivityDTO adto) throws ActivityNotFoundException {
         Activity a = mapper.map(adto, Activity.class);
 
         a_repo.findById(a.getId()).orElseThrow(ActivityNotFoundException::new);
 
-        return a_repo.save(a);
+        return mapper.map(a_repo.save(a), ActivityDTO.class);
     }
 
 

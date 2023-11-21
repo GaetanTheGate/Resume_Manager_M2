@@ -51,24 +51,24 @@ public class CVRestController {
     /// PostMapping
 
     @PostMapping("")
-    public CV postCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
+    public CVDTO postCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
         CV cv = mapper.map(cvdto, CV.class);
 
         Optional.ofNullable(c_repo.findById(cv.getId()).isPresent() ? null : cv).orElseThrow(CVNotFoundException::new);
 
-        return c_repo.save(cv);
+        return mapper.map(c_repo.save(cv), CVDTO.class);
     }
 
 
     /// PutMapping
 
     @PutMapping("")
-    public CV putCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
+    public CVDTO putCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
         CV cv = mapper.map(cvdto, CV.class);
 
         c_repo.findById(cv.getId()).orElseThrow(CVNotFoundException::new);
 
-        return c_repo.save(cv);
+        return mapper.map(c_repo.save(cv), CVDTO.class);
     }
 
 
