@@ -54,6 +54,15 @@ const myApp = {
             this.pageType = type;
         },
 
+        goBack: function(){
+            if(this.activity)
+                this.setCV(this.cv.id);
+            else if(this.cv)
+                this.setPerson(this.person.id);
+            else if(this.person)
+                this.setNothing();
+        },
+
         setListAndShow: function(l, s){
             this.list = l;
             if(this.list.length != 0) this.show = s;
@@ -111,7 +120,7 @@ const myApp = {
         },
 
         resetActivity: function(){
-            this.activitie = null;
+            this.activity = null;
         },
 
         setNothing: function(){

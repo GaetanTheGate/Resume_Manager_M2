@@ -64,8 +64,8 @@
         
         <!-- Display information about something -->
         <div v-if="pageType == 'showing'">
-            <button v-if="show_modify_button"
-                class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button>
+            <button v-if="person" class="btn btn-primary" v-on:click="goBack()">Retour arriere</button>
+            <button v-if="show_modify_button" class="btn btn-primary" v-on:click="setPageType('modifying')">Modifier</button>
             <!-- If there is no actity -->
             <div v-if="!activity">
                 <!-- If there is no cv -->
