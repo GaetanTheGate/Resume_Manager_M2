@@ -76,7 +76,7 @@ public class ActivityRestController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMovie(@PathVariable int id) {
+    public void deleteActivity(@PathVariable int id) {
         a_repo.deleteById(id);
     }
 

@@ -76,7 +76,7 @@ public class CVRestController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMovie(@PathVariable int id) {
+    public void deleteCV(@PathVariable int id) {
         c_repo.deleteById(id);
     }
 

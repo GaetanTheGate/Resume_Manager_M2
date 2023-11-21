@@ -76,7 +76,7 @@ public class PersonRestController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMovie(@PathVariable int id) {
+    public void deletePerson(@PathVariable int id) {
         p_repo.deleteById(id);
     }
 
