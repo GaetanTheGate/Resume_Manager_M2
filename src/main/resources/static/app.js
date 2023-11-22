@@ -71,6 +71,7 @@ const myApp = {
 
         getPersonShow: function(){
             let show = {};
+            show.title = "Liste d'individus";
 
             show.onClick = (id) => this.setPerson(id);
             
@@ -85,6 +86,7 @@ const myApp = {
 
         getCVShow: function(){
             let show = {};
+            show.title = "Liste de CV";
 
             show.onClick = (id) => this.setCV(id);
             
@@ -98,6 +100,7 @@ const myApp = {
 
         getActivityShow: function(){
             let show = {};
+            show.title = "Liste d'activité";
 
             show.onClick = (id) => this.setActivity(id);
             
