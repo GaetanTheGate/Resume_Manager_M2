@@ -41,6 +41,7 @@ hr.thick {
 }
 
 .form-popup {
+    z-index: 1;
     display: block;
     position: fixed;
     top: 15px;
@@ -89,4 +90,21 @@ hr.thick {
 .form-container input[type=text]:focus, .form-container input[type=password]:focus {
     background-color: #ddd;
     outline: none;
+}
+
+.page {
+    display: flex;
+    align-items: stretch;
+
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.search {
+    padding-right: 2rem;
+    width: 20%;
+    max-width: 20rem;
+    border-right: 2px solid #00000040;
+    min-height: 80vh;
 }

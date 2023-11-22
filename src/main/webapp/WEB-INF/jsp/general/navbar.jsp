@@ -4,7 +4,7 @@
     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
         <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('person')">Personnes</a>
         <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('cv')">CVs</a>
-        <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('activity')">Activitees</a>
+        <a class="dropdown-item" href="#" v-on:click="openSearchBarFor('activity')">Activit&eacute;es</a>
     </div>        
     <a v-if="!token" class="navbar-brand" href="#" v-on:click="openLogin()">Se connecter</a>
     <a v-if="!token" class="navbar-brand" href="#" v-on:click="openSignup()">S'inscrire</a>

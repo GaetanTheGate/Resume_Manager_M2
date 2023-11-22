@@ -1,4 +1,9 @@
 const myApp = {
+    // watch: {
+    //     person() { this.updateUri() },
+    //     cv() { this.updateUri() },
+    //     activity() { this.updateUri() },
+    // },
     
     // Préparation des données
     data() {
@@ -43,7 +48,6 @@ const myApp = {
             timeout: 5000,
         });
 
-        this.login("admin", "admin");
         this.setPageType("showing");
         this.closeLog();
         this.setNothing();
@@ -364,7 +368,19 @@ const myApp = {
                             });
                 });
             }
-        }
+        },
+
+        updateUri() {
+            let s = "";
+            if(this.person)
+                s += "/person/"+this.person.id;
+            if(this.cv)
+                s += "/cv/"+this.cv.id;
+            if(this.activity)
+                s += "/activity/"+this.activity.id;
+
+            window.location.href = "http://localhost:8081/app" + s;
+        },
     }
 }
 
