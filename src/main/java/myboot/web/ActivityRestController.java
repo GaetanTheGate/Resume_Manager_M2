@@ -2,8 +2,11 @@ package myboot.web;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,18 +20,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import myboot.Utility.IsEntityFromUserChecker;
 import myboot.dao.ActivityRepository;
 import myboot.dto.ActivityDTO;
 import myboot.model.Activity;
 
 @RestController
 @RequestMapping("/api/activities")
+@Profile("usejwt")
 public class ActivityRestController {
     @Autowired
     ActivityRepository a_repo;
 
     @Autowired
     LocalValidatorFactoryBean validationFactory;
+
+    @Autowired
+    IsEntityFromUserChecker userChecker;
 
     private ModelMapper mapper = new ModelMapper();
 
@@ -51,7 +59,10 @@ public class ActivityRestController {
     /// PostMapping
 
     @PostMapping("")
-    public ActivityDTO postActivity(@RequestBody ActivityDTO adto) throws ActivityNotFoundException {
+    public ActivityDTO postActivity(@RequestBody ActivityDTO adto, HttpServletRequest req) throws ActivityNotFoundException, IsEntityFromUserChecker.UserNotAllowedException {
+        if(! (userChecker.isUserAdmin(req) || userChecker.isMyCV(req, adto.getCv().getId())))
+            throw new IsEntityFromUserChecker.UserNotAllowedException();
+
         Activity a = mapper.map(adto, Activity.class);
 
         Optional.ofNullable(a_repo.findById(a.getId()).isPresent() ? null : a).orElseThrow(ActivityNotFoundException::new);
@@ -63,7 +74,10 @@ public class ActivityRestController {
     /// PutMapping
 
     @PutMapping("")
-    public ActivityDTO putActivity(@RequestBody ActivityDTO adto) throws ActivityNotFoundException {
+    public ActivityDTO putActivity(@RequestBody ActivityDTO adto, HttpServletRequest req) throws ActivityNotFoundException, IsEntityFromUserChecker.UserNotAllowedException {
+        if(! (userChecker.isUserAdmin(req) || userChecker.isMyActivity(req, adto.getId())))
+            throw new IsEntityFromUserChecker.UserNotAllowedException();
+        
         Activity a = mapper.map(adto, Activity.class);
 
         Optional<Activity> a_data = a_repo.findById(a.getId());
@@ -79,7 +93,10 @@ public class ActivityRestController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteActivity(@PathVariable int id) {
+    public void deleteActivity(@PathVariable int id, HttpServletRequest req) throws IsEntityFromUserChecker.UserNotAllowedException {
+        if(! (userChecker.isUserAdmin(req) || userChecker.isMyActivity(req, id)))
+            throw new IsEntityFromUserChecker.UserNotAllowedException();
+
         a_repo.deleteById(id);
     }
 
@@ -87,7 +104,7 @@ public class ActivityRestController {
     /// Exception
 
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public class ActivityNotFoundException extends RuntimeException{
+    public static class ActivityNotFoundException extends RuntimeException{
         private static final long serialVersionUID = 1L;
     }
 }

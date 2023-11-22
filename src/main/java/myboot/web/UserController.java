@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,17 +18,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import myboot.model.Person;
 import myboot.model.XUser;
 import myboot.dao.PersonRepository;
-import myboot.dto.CVDTO;
 import myboot.dto.XUserDTO;
 import myboot.dto.XUserSignUpDTO;
 import myboot.security.JwtProvider;
 import myboot.security.UserService;
-import myboot.web.CVRestController.CVNotFoundException;
 
 /**
  * L'API d'authentification
@@ -107,6 +107,13 @@ public class UserController {
 		return modelMapper.map(userService.whoami(req), XUserDTO.class);
 	}
 
+	@GetMapping(value = "/me/role/{role}")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+	public boolean amiRole(HttpServletRequest req, @PathVariable String role) {
+		return userService.whoami(req).getRoles().contains(role.toUpperCase());
+	}
+
+
 	/**
 	 * Récupérer un nouveau JWT
 	 */
@@ -126,18 +133,8 @@ public class UserController {
 
 	}
 
-
-    /// PostMapping
-
-    @PostMapping("/test")
-    public CVDTO postCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
-        System.out.println("----------------------------");
-        System.out.println("----------------------------");
-
-        System.out.println(cvdto);
-
-        System.out.println("----------------------------");
-        System.out.println("----------------------------");
-		return cvdto;
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public static class UserNotFoundException extends RuntimeException{
+        private static final long serialVersionUID = 1L;
     }
 }

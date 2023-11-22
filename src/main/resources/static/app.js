@@ -138,8 +138,7 @@ const myApp = {
         setPerson: function(id){
             console.log("SetPerson");
             this.axios.get("persons/"+id).then(p => {
-                console.log(p.data);
-                this.resetCV();
+                this.resetPerson();
                 this.person = p.data;
                 this.setListAndShow(this.person.cvs, this.getCVShow());
 
@@ -251,21 +250,21 @@ const myApp = {
 
         savePerson: function(){
             console.log(this.person);
-            this.axios.put("persons", this.person).then(p => {
+            this.axios.put("persons", this.person, { headers : { Authorization:"Bearer " + this.token }}).then(p => {
                 this.person = p.data;
             });
         },
 
         saveCv: function(){
             console.log(this.cv);
-            this.axios.put("cvs", this.cv).then(c => {
+            this.axios.put("cvs", this.cv, { headers : { Authorization:"Bearer " + this.token }}).then(c => {
                 this.cv = c.data;
             });
         },
 
         saveActivity: function(){
             console.log(this.activity);
-            this.axios.put("activities", this.activity).then(a => {
+            this.axios.put("activities", this.activity, { headers : { Authorization:"Bearer " + this.token }}).then(a => {
                 this.activity = a.data;
             });
         },
@@ -278,7 +277,7 @@ const myApp = {
                 "self": this.person,
             };
 
-            this.axios.post("persons", person).then(p => {
+            this.axios.post("persons", person, { headers : { Authorization:"Bearer " + this.token }}).then(p => {
                 this.setPerson(p.data.id)
             });
         },
@@ -291,7 +290,7 @@ const myApp = {
                 "owner": this.person,
             };
 
-            this.axios.post("cvs", cv).then(c => {
+            this.axios.post("cvs", cv, { headers : { Authorization:"Bearer " + this.token }}).then(c => {
                 this.setCV(c.data.id);
             });
         },
@@ -305,7 +304,7 @@ const myApp = {
                 "cv": this.cv,
             };
 
-            this.axios.post("activities", activity).then(a => {
+            this.axios.post("activities", activity, { headers : { Authorization:"Bearer " + this.token }}).then(a => {
                 this.setActivity(a.data.id);
             });
         },
@@ -313,10 +312,10 @@ const myApp = {
         deletePerson: async function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette personne ?')){
                 await Promise.all(this.person.cvs.map( element =>
-                    this.axios.delete("cvs/"+element.id)
+                    this.axios.delete("cvs/"+element.id, { headers : { Authorization:"Bearer " + this.token }})
                 ));
 
-                this.axios.delete("persons/"+this.person.id).then(() => {
+                this.axios.delete("persons/"+this.person.id, { headers : { Authorization:"Bearer " + this.token }}).then(() => {
                     this.setNothing();
                 });
             }
@@ -325,10 +324,10 @@ const myApp = {
         deleteCv: async function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement ce CV ?')){
                 await Promise.all(this.cv.activities.map( element => 
-                    this.axios.delete("activities/"+element.id)
+                    this.axios.delete("activities/"+element.id, { headers : { Authorization:"Bearer " + this.token }})
                 ));
 
-                this.axios.delete("cvs/"+this.cv.id).then(() => {
+                this.axios.delete("cvs/"+this.cv.id, { headers : { Authorization:"Bearer " + this.token }}).then(() => {
                     this.setPerson(this.person.id);
                 });
             }
@@ -336,7 +335,7 @@ const myApp = {
 
         deleteActivity: function(){
             if(confirm('Êtes-vous sûr de vouloir supprimer définitivement cette activitée ?')){
-                this.axios.delete("activities/"+this.activity.id).then(() => {
+                this.axios.delete("activities/"+this.activity.id, { headers : { Authorization:"Bearer " + this.token }}).then(() => {
                     this.setCV(this.cv.id);
                 });
             }
@@ -349,29 +348,20 @@ const myApp = {
             }
             else {
                 this.show_modify_button = false;
-
-                this.axiosLogin.get("me", { headers : { Authorization:"Bearer " + this.token }}).then(u => {
-                    let user = u.data;
-    
-                    if(user.roles.includes("ADMIN"))
+                this.axiosLogin.get("me/role/ADMIN", { headers : { Authorization:"Bearer " + this.token }}).then(b => {
+                    if(b.data)
                         this.show_modify_button = true;
 
-                    else {
-                        let p;
-                        if(this.activity)
-                            p = this.activity.cv.owner;
-                        else if(this.cv)
-                            p = this.cv.owner;
-                        else
-                            p = this.person;
+                    else
+                        this.axiosLogin.get("me", { headers : { Authorization:"Bearer " + this.token }}).then(u => {
+                            let user = u.data;
+                        
+                            if(user.self)
+                                this.show_modify_button = this.person.id == user.self.id;
 
-                        if(user.self){
-                            this.show_modify_button = p.id == user.self.id;
-                        }
-                    }
-
-                    if(!this.show_modify_button)
-                        this.setPageType("showing");
+                            if(!this.show_modify_button)
+                                this.setPageType("showing");
+                            });
                 });
             }
         }

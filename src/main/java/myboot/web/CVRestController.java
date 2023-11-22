@@ -2,8 +2,11 @@ package myboot.web;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,12 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import myboot.Utility.IsEntityFromUserChecker;
 import myboot.dao.CVRepository;
 import myboot.dto.CVDTO;
 import myboot.model.CV;
 
 @RestController
 @RequestMapping("/api/cvs")
+@Profile("usejwt")
 public class CVRestController {
     @Autowired
     CVRepository c_repo;
@@ -31,6 +36,9 @@ public class CVRestController {
     LocalValidatorFactoryBean validationFactory;
 
     private ModelMapper mapper = new ModelMapper();
+
+    @Autowired
+    IsEntityFromUserChecker userChecker;
 
     /// GetMapping
 
@@ -51,14 +59,13 @@ public class CVRestController {
     /// PostMapping
 
     @PostMapping("")
-    public CVDTO postCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
+    public CVDTO postCV(@RequestBody CVDTO cvdto, HttpServletRequest req) throws CVNotFoundException, IsEntityFromUserChecker.UserNotAllowedException {
+        if(! (userChecker.isUserAdmin(req) || userChecker.isMyPerson(req, cvdto.getOwner().getId())))
+            throw new IsEntityFromUserChecker.UserNotAllowedException();
+
         CV cv = mapper.map(cvdto, CV.class);
 
-
-        Optional<CV> cv_data = c_repo.findById(cv.getId());
-        Optional.ofNullable(cv_data.isPresent() ? null : cv).orElseThrow(CVNotFoundException::new);
-
-        cv.setOwner(cv_data.get().getOwner());
+        Optional.ofNullable(c_repo.findById(cv.getId()).isPresent() ? null : cv).orElseThrow(CVNotFoundException::new);
 
         return mapper.map(c_repo.save(cv), CVDTO.class);
     }
@@ -67,10 +74,16 @@ public class CVRestController {
     /// PutMapping
 
     @PutMapping("")
-    public CVDTO putCV(@RequestBody CVDTO cvdto) throws CVNotFoundException {
+    public CVDTO putCV(@RequestBody CVDTO cvdto, HttpServletRequest req) throws CVNotFoundException, IsEntityFromUserChecker.UserNotAllowedException {
+        if(! (userChecker.isUserAdmin(req) || userChecker.isMyCV(req, cvdto.getId())))
+            throw new IsEntityFromUserChecker.UserNotAllowedException();
+        
         CV cv = mapper.map(cvdto, CV.class);
 
-        c_repo.findById(cv.getId()).orElseThrow(CVNotFoundException::new);
+        Optional<CV> cv_data = c_repo.findById(cv.getId());
+        cv_data.orElseThrow(CVNotFoundException::new);
+
+        cv.setOwner(cv_data.get().getOwner());
 
         return mapper.map(c_repo.save(cv), CVDTO.class);
     }
@@ -80,7 +93,10 @@ public class CVRestController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCV(@PathVariable int id) {
+    public void deleteCV(@PathVariable int id, HttpServletRequest req) throws IsEntityFromUserChecker.UserNotAllowedException {
+        if(! (userChecker.isUserAdmin(req) || userChecker.isMyCV(req, id)))
+            throw new IsEntityFromUserChecker.UserNotAllowedException();
+
         c_repo.deleteById(id);
     }
 
@@ -88,7 +104,7 @@ public class CVRestController {
     /// Exception
 
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public class CVNotFoundException extends RuntimeException{
+    public static class CVNotFoundException extends RuntimeException{
         private static final long serialVersionUID = 1L;
     }
 }
