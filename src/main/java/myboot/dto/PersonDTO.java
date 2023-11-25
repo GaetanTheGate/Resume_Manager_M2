@@ -20,9 +20,6 @@ public class PersonDTO {
 
     @JsonView(View.Public.class)
     private int id;
-
-    @JsonView(View.Public.class)
-    private String password;
     
     @JsonView(View.Public.class)
     private String name;

@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -25,6 +26,7 @@ public class XUser {
 	private String userName;
 
 	@Basic
+	@NotBlank
 	private String password;
 
 	@ElementCollection(fetch = FetchType.EAGER)

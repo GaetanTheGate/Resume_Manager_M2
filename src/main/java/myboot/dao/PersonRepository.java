@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import myboot.model.CV;
 import myboot.model.Person;
+import myboot.model.XUser;
 
 @Repository
 @Transactional
@@ -20,4 +21,7 @@ public interface PersonRepository extends CrudRepository<Person, Integer> {
 
     @Query("SELECT p.cvs FROM Person p WHERE p.id = :id")
     List<CV> getCVs(int id);
+
+    @Query("SELECT p.self FROM Person p WHERE p.id = :id")
+    XUser getSelf(int id);
 }

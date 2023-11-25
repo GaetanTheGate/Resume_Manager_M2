@@ -39,9 +39,6 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@PostConstruct
 	public void init() {
-		var encoder = passwordEncoder();
-		var admin = new XUser("admin", encoder.encode("admin"), Set.of("ADMIN", "USER"), null);
-		userRepo.save(admin);
 		logger.debug("--- INIT SPRING SECURITY JWT");
 	}
 

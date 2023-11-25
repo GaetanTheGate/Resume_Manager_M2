@@ -73,7 +73,7 @@ public class UserController {
 		String token = userService.signup(u);
 
 		u = userService.search(jwtTokenProvider.getUsername(token));
-		p_repo.save(new Person(0, "", user.getUsername(), user.getUsername(), "", "", null, new ArrayList<>(), u));
+		p_repo.save(new Person(0, user.getUsername(), user.getUsername(), "", "", null, null, u));
 
 		return token;
 	}

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import myboot.model.Activity;
 import myboot.model.CV;
 import myboot.model.Person;
+import myboot.model.XUser;
 
 @SpringBootTest
 public class TestRepository {
@@ -27,10 +29,12 @@ public class TestRepository {
     protected CVRepository c_repo;
     @Autowired
     protected PersonRepository p_repo;
+    @Autowired
+    protected XUserRepository u_repo;
 
     @SuppressWarnings("unused")
     private Activity createAndSaveActivity(){
-        return a_repo.save(new Activity(0, 2000, "test", "test", "description", "test", createAndSaveCV()));
+        return a_repo.save(createActivity());
     }
 
     private Activity createActivity(){
@@ -38,19 +42,27 @@ public class TestRepository {
     }
 
     private CV createAndSaveCV(){
-        return c_repo.save(new CV(0,"test", "test", new ArrayList<>(), createAndSavePerson()));
+        return c_repo.save(createCV());
     }
 
     private CV createCV(){
-        return new CV(0, "test", "test", new ArrayList<>(), createAndSavePerson());
+        return new CV(0, "test", "test", null, createAndSavePerson());
     }
 
     private Person createAndSavePerson(){
-        return p_repo.save(new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null));
+        return p_repo.save(createPerson());
     }
 
     private Person createPerson(){
-        return new Person(0, "test", "test", "test", "test", "test", null, new ArrayList<>(), null);
+        return new Person(0, "test", "test", "test", "test", null, null, createUserAndSave());
+    }
+
+    private XUser createUserAndSave(){
+        return u_repo.save(createUser());
+    }
+
+    private XUser createUser(){
+        return new XUser("test", "test", Set.of("TEST"), null);
     }
 
     @BeforeEach
@@ -68,10 +80,13 @@ public class TestRepository {
 
     @Test
     public void testBasicAddAndRemoveOnAllEntityWithLink(){
-            Person p = p_repo.save(new Person(0, "password", "Name", "FirstName", "mail", "web", null, new ArrayList<>(), null));
-            CV cv = c_repo.save(new CV(0, "test", "test", new ArrayList<>(), p));
+            XUser u = u_repo.save(new XUser("Username", "Password", null, null));
+            Person p = p_repo.save(new Person(0, "Name", "FirstName", "mail", "web", null, null, u));
+            CV cv = c_repo.save(new CV(0, "test", "test", null, p));
             Activity a = a_repo.save(new Activity(0, 2000, "test", "test", "description test", "test"+".fr", cv));
 
+            assertEquals(u.getUserName(), p_repo.getSelf(p.getId()).getUserName());
+            assertEquals(p.getId(), u_repo.getSelf(u.getUserName()).getId());
 
             assertEquals(p.getId(), c_repo.getOwner(cv.getId()).getId());
             assertEquals(cv.getId(), p_repo.getCVs(p.getId()).get(0).getId());
@@ -98,28 +113,39 @@ public class TestRepository {
 
 
             assertEquals(true, p_repo.findById(p.getId()).isEmpty());
+            assertEquals(null, u_repo.getSelf(u.getUserName()));
+
+            u_repo.delete(u);
+
+            assertEquals(true, u_repo.findById(u.getUserName()).isEmpty());
     }
 
 
     @Test
-    public void testBasicAddAndRemoveOnActivityWithNonExistentCV(){
+    public void testBasicAddOnActivityWithNonExistentCV(){
         assertThrows(Exception.class, () -> { a_repo.save(new Activity(0, 2000, "test", "test", "description test", "test"+".fr", createCV())); });
         assertEquals("[]", a_repo.findAll().toString());
     }
 
     @Test
-    public void testBasicAddAndRemoveOnCVWithNonExistentPerson(){
+    public void testBasicAddOnCVWithNonExistentPerson(){
         assertThrows(Exception.class, () -> { c_repo.save(new CV(0, "test", "test", new ArrayList<>(), createPerson())); });
         assertEquals("[]", c_repo.findAll().toString());
+    }
+
+    @Test
+    public void testBasicAddOnPersonWithNonExistentUser(){
+        assertThrows(Exception.class, () -> { p_repo.save(new Person(0, "test", "test", "test", "test", null, null, createUser())); });
+        assertEquals("[]", a_repo.findAll().toString());
     }
 
     @Test
     void testAddMultipleCVsToPerson(){
         Person p = createAndSavePerson();
         for(int i = 0 ; i < 5 ; i++){
-            CV cv = c_repo.save(new CV(0, "test", "test", new ArrayList<>(), p));
+            CV cv = c_repo.save(new CV(0, "test", "test", null, p));
 
-            assertEquals(p.getId(), c_repo.getOwner(p.getId()).getId());
+            assertEquals(p.getId(), c_repo.getOwner(cv.getId()).getId());
             assertEquals(cv.getId(), p_repo.getCVs(p.getId()).get(i).getId());
         }
 
@@ -144,7 +170,8 @@ public class TestRepository {
         clearTables();
 
         for(int x = 0 ; x < nb_p ; x++){
-            Person p = p_repo.save(new Person(0, "password"+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null, null));
+            XUser u = u_repo.save(new XUser("test"+x, "test", null, null));
+            Person p = p_repo.save(new Person(0+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null, u));
 
             for(int y = 0 ; y < nb_c ; y++){
                 CV cv = c_repo.save(new CV(0, "test", "test", new ArrayList<>(), p));
@@ -211,21 +238,52 @@ public class TestRepository {
     
     @Test
     public void testSaveCVWithInvalidConstraint(){
-        CV cv = createCV();
-        cv.setOwner(null);
-        
-        assertThrows(Exception.class, () -> { c_repo.save(cv) ; } );
-        assertEquals("[]", c_repo.findAll().toString());
+        CV cv1 = createCV();
+        cv1.setOwner(null);
+        assertThrows(Exception.class, () -> { c_repo.save(cv1) ; } );
 
         CV cv2 = createCV();
         cv2.setTitle("");
-        
         assertThrows(Exception.class, () -> { c_repo.save(cv2) ; } );
+
+
         assertEquals("[]", c_repo.findAll().toString());
     }
     
     @Test
     public void testSavePersonWithInvalidConstraint(){
-        // No constraint to violate in Person
+        Person p1 = createPerson();
+        p1.setName(null);
+        assertThrows(Exception.class, () -> { p_repo.save(p1);});
+
+        Person p2 = createPerson();
+        p2.setName("");
+        assertThrows(Exception.class, () -> { p_repo.save(p2);});
+
+        Person p3 = createPerson();
+        p3.setFirstname(null);
+        assertThrows(Exception.class, () -> { p_repo.save(p3);});
+
+        Person p4 = createPerson();
+        p4.setFirstname("");
+        assertThrows(Exception.class, () -> { p_repo.save(p4);});
+
+
+        assertEquals("[]", p_repo.findAll().toString());
+    }
+
+    @Test
+    public void testSaveUserWithInvalidConstraint(){
+        XUser u1 = createUser();
+        u1.setPassword(null);
+        assertThrows(Exception.class, () -> { u_repo.save(u1);});
+
+
+        XUser u2 = createUser();
+        u2.setPassword("");
+        assertThrows(Exception.class, () -> { u_repo.save(u2);});
+
+
+        assertEquals("[]", u_repo.findAll().toString());
     }
 }
