@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.ToString.Exclude;
 
 @Entity
@@ -52,7 +51,6 @@ public class Person {
 
 	@OneToOne
     @JsonBackReference
-    @NonNull
     @Exclude
 	private XUser self;
 }

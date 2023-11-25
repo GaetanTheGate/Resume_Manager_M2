@@ -140,7 +140,6 @@ const myApp = {
         },
 
         setPerson: function(id){
-            console.log("SetPerson");
             this.axios.get("persons/"+id).then(p => {
                 this.resetPerson();
                 this.person = p.data;
@@ -151,7 +150,6 @@ const myApp = {
         },
 
         setCV: function(id){
-            console.log("SetCv");
             this.axios.get("cvs/"+id).then(c => {
                 this.resetActivity();
                 this.cv = c.data;
@@ -162,7 +160,6 @@ const myApp = {
         },
 
         setActivity: function(id){
-            console.log("SetActivity");
             this.axios.get("activities/"+id).then(a => {
                 this.activity = a.data;
                 this.setListAndShow([], null);
@@ -253,21 +250,18 @@ const myApp = {
         },
 
         savePerson: function(){
-            console.log(this.person);
             this.axios.put("persons", this.person, { headers : { Authorization:"Bearer " + this.token }}).then(p => {
                 this.person = p.data;
             });
         },
 
         saveCv: function(){
-            console.log(this.cv);
             this.axios.put("cvs", this.cv, { headers : { Authorization:"Bearer " + this.token }}).then(c => {
                 this.cv = c.data;
             });
         },
 
         saveActivity: function(){
-            console.log(this.activity);
             this.axios.put("activities", this.activity, { headers : { Authorization:"Bearer " + this.token }}).then(a => {
                 this.activity = a.data;
             });

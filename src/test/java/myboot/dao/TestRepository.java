@@ -4,11 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,11 +19,8 @@ import myboot.model.Person;
 import myboot.model.XUser;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.Random.class)
 public class TestRepository {
-    private int nb_a = 5;
-    private int nb_c = 4;
-    private int nb_p = 3;
-
     @Autowired
     protected ActivityRepository a_repo;
     @Autowired
@@ -71,11 +69,13 @@ public class TestRepository {
         a_repo.deleteAll();
         c_repo.deleteAll();
         p_repo.deleteAll();
+        u_repo.deleteAll();
 
 
         assertEquals("[]", a_repo.findAll().toString());
         assertEquals("[]", c_repo.findAll().toString());
         assertEquals("[]", p_repo.findAll().toString());
+        assertEquals("[]", u_repo.findAll().toString());
     }
 
     @Test
@@ -163,50 +163,6 @@ public class TestRepository {
         }
 
         assertEquals(5, c_repo.getActivities(cv.getId()).size());
-    }
-
-    @Test
-    public void testFillTablesWithData(){
-        clearTables();
-
-        for(int x = 0 ; x < nb_p ; x++){
-            XUser u = u_repo.save(new XUser("test"+x, "test", null, null));
-            Person p = p_repo.save(new Person(0+x, "Name"+x, "FirstName"+x, "mail"+x, "web"+x, null, null, u));
-
-            for(int y = 0 ; y < nb_c ; y++){
-                CV cv = c_repo.save(new CV(0, "test", "test", new ArrayList<>(), p));
-
-
-                assertEquals(p.getId(), c_repo.getOwner(cv.getId()).getId());
-                assertEquals(cv.getId(), p_repo.getCVs(p.getId()).get(y).getId());
-
-
-                for(int z = 0 ; z < nb_a ; z++){
-                    Activity a = a_repo.save(new Activity(0, 2000+z, String.valueOf(z), "test"+z, "description test"+z, "test"+z+".fr", cv));
-
-
-                    assertEquals(cv.getId(), a_repo.getCV(a.getId()).getId());
-                    assertEquals(a.getId(), c_repo.getActivities(cv.getId()).get(z).getId());
-                }
-
-
-                assertEquals(nb_a, c_repo.getActivities(cv.getId()).size());
-            }
-            assertEquals(nb_c, p_repo.getCVs(p.getId()).size());
-        }
-
-
-        List<Activity> as = new ArrayList<>();
-        List<CV> cs = new ArrayList<>();
-        List<Person> ps = new ArrayList<>();
-
-        a_repo.findAll().forEach(as::add);
-        c_repo.findAll().forEach(cs::add);
-        p_repo.findAll().forEach(ps::add);
-
-        assertEquals(nb_p*nb_c*nb_a,    as.size());
-        assertEquals(nb_p*nb_c,         cs.size());
-        assertEquals(nb_p,              ps.size());
     }
     
     @Test

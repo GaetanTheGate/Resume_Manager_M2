@@ -1,7 +1,5 @@
 package myboot.security;
 
-import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
@@ -18,9 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import myboot.dao.XUserRepository;
-import myboot.model.XUser;
-
 /**
  * Configuration de Spring Security.
  */
@@ -28,9 +23,6 @@ import myboot.model.XUser;
 @EnableWebSecurity
 @Profile("usejwt")
 public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-	@Autowired
-	private XUserRepository userRepo;
 	
 	@Autowired
 	private JwtProvider jwtTokenProvider;
@@ -44,28 +36,23 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// Pas de vérification CSRF (cross site request forgery)
-		http.csrf().disable();
+        // Pas de vérification CSRF (cross site request forgery)
+        http.csrf(csrf -> csrf.disable());
 
-		// Spring security se doit gérer les sessions
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        // Spring security se doit gérer les sessions
+        http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-		// Déclaration des end-points
-		http.authorizeRequests()//
-				.antMatchers("/secu-users/login").permitAll()//
-				.antMatchers("/secu-users/signup").permitAll()//
-				.antMatchers("/secu-users/**").permitAll()//
-				// Autoriser le reste...
-				.anyRequest().permitAll();
-
-		// Pas vraiment nécessaire
-		http.exceptionHandling().accessDeniedPage("/secu-users/login");
+        // Déclaration des end-points
+        http.authorizeRequests(requests -> requests//
+                .antMatchers("/secu-users/login").permitAll()//
+                .antMatchers("/secu-users/signup").permitAll()//
+                .antMatchers("/secu-users/**").permitAll()//
+                // Autoriser le reste...
+                .anyRequest().permitAll());
 
 		// Mise en place du filtre JWT
 		http.apply(new JwtFilterConfigurer(jwtTokenProvider));
 
-		// Optional, if you want to test the API from a browser
-		// http.httpBasic();
 	}
 
 	@Bean

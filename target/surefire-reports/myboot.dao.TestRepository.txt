@@ -1,8 +1,0 @@
--------------------------------------------------------------------------------
-Test set: myboot.dao.TestRepository
--------------------------------------------------------------------------------
-Tests run: 10, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 28.052 s <<< FAILURE! - in myboot.dao.TestRepository
-testAddMultipleCVsToPerson  Time elapsed: 0.095 s  <<< ERROR!
-java.lang.NullPointerException: Cannot invoke "myboot.model.Person.getId()" because the return value of "myboot.dao.CVRepository.getOwner(int)" is null
-	at myboot.dao.TestRepository.testAddMultipleCVsToPerson(TestRepository.java:122)
-

@@ -1,6 +1,5 @@
 package myboot.web;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class UtilityController implements ErrorController {
 
             String n = faker.name().firstName();
 
-            XUser u = u_repo.save(new XUser(n + x, encoder.encode(n), Set.of("USER"), null));
+            XUser u = u_repo.save(new XUser(n + x, encoder.encode(n + x), Set.of("USER"), null));
 
             Person p = p_repo.save(new Person(0, n, faker.name().lastName(), n + x+"@mail.com", n+".com", faker.date().birthday(), null, u));
 
